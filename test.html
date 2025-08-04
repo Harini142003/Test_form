@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for Inter font and general body styling */
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        /* Style for error messages */
+        .error-message {
+            color: #ef4444; /* Red-500 */
+            font-size: 0.875rem; /* text-sm */
+            margin-top: 4px; /* mt-1 */
+        }
+        /* Hide default file input */
+        .custom-file-input::-webkit-file-upload-button {
+            visibility: hidden;
+        }
+        .custom-file-input::before {
+            content: 'Select image';
+            display: inline-block;
+            background: #3498db; /* Blue-500 */
+            color: white;
+            border: 1px solid #3498db;
+            border-radius: 0.5rem; /* rounded-lg */
+            padding: 0.5rem 1rem; /* py-2 px-4 */
+            outline: none;
+            white-space: nowrap;
+            -webkit-user-select: none;
+            cursor: pointer;
+            font-weight: 600; /* font-semibold */
+            font-size: 0.875rem; /* text-sm */
+            transition: background-color 0.3s ease;
+        }
+        .custom-file-input:hover::before {
+            background-color: #2980b9; /* Blue-600 */
+        }
+        .custom-file-input:active::before {
+            background-color: #2563eb; /* Blue-700 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md md:max-w-lg lg:max-w-xl">
+        <h1 class="text-3xl font-extrabold text-center text-gray-800 mb-8">Register Your Account</h1>
+
+        <form id="registrationForm" class="space-y-6">
+            <!-- Global Error Message Area -->
+            <div id="globalError" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert" aria-live="assertive">
+                <strong class="font-bold">Validation Error!</strong>
+                <span class="block sm:inline" id="globalErrorMessage"></span>
+            </div>
+
+            <!-- Name Field -->
+            <div>
+                <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="John Doe" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" aria-describedby="nameError">
+                <p id="nameError" class="error-message" role="alert"></p>
+            </div>
+
+            <!-- Email Field -->
+            <div>
+                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="john.doe@example.com" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" aria-describedby="emailError">
+                <p id="emailError" class="error-message" role="alert"></p>
+            </div>
+
+            <!-- Password Field -->
+            <div>
+                <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                <input type="password" id="password" name="password" placeholder="Min 8 characters, 1 uppercase, 1 number" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" aria-describedby="passwordError">
+                <p id="passwordError" class="error-message" role="alert"></p>
+            </div>
+
+            <!-- Confirm Password Field -->
+            <div>
+                <label for="confirmPassword" class="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" aria-describedby="confirmPasswordError">
+                <p id="confirmPasswordError" class="error-message" role="alert"></p>
+            </div>
+
+            <!-- Image Upload Field -->
+            <div>
+                <label for="imageUpload" class="block text-sm font-semibold text-gray-700 mb-2">Profile Image</label>
+                <input type="file" id="imageUpload" name="profileImage" accept="image/png, image/jpeg, image/gif" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 custom-file-input" aria-describedby="imageError">
+                <p id="imageError" class="error-message" role="alert"></p>
+                <div id="imagePreviewContainer" class="mt-4 hidden">
+                    <p class="text-sm font-medium text-gray-600 mb-2">Image Preview:</p>
+                    <img id="imagePreview" src="#" alt="Image Preview" class="max-w-full h-auto rounded-lg shadow-md border border-gray-200 object-cover" style="max-height: 200px;">
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-200 transform hover:scale-105">
+                Register
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('registrationForm');
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const imageUploadInput = document.getElementById('imageUpload');
+            const imagePreview = document.getElementById('imagePreview');
+            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+            const globalError = document.getElementById('globalError');
+            const globalErrorMessage = document.getElementById('globalErrorMessage');
+
+            // Function to display individual field errors
+            const displayError = (element, message) => {
+                const errorElement = document.getElementById(element.id + 'Error');
+                if (errorElement) {
+                    errorElement.textContent = message;
+                    element.classList.add('border-red-500');
+                    element.classList.remove('focus:ring-blue-500');
+                    element.classList.add('focus:ring-red-500');
+                }
+            };
+
+            // Function to clear individual field errors
+            const clearError = (element) => {
+                const errorElement = document.getElementById(element.id + 'Error');
+                if (errorElement) {
+                    errorElement.textContent = '';
+                    element.classList.remove('border-red-500');
+                    element.classList.add('focus:ring-blue-500');
+                    element.classList.remove('focus:ring-red-500');
+                }
+            };
+
+            // Function to display global error
+            const showGlobalError = (message) => {
+                globalErrorMessage.textContent = message;
+                globalError.classList.remove('hidden');
+            };
+
+            // Function to hide global error
+            const hideGlobalError = () => {
+                globalError.classList.add('hidden');
+                globalErrorMessage.textContent = '';
+            };
+
+            // --- Validation Functions ---
+
+            const validateName = () => {
+                if (nameInput.value.trim() === '') {
+                    displayError(nameInput, 'Full Name is required.');
+                    return false;
+                }
+                clearError(nameInput);
+                return true;
+            };
+
+            const validateEmail = () => {
+                const email = emailInput.value.trim();
+                if (email === '') {
+                    displayError(emailInput, 'Email Address is required.');
+                    return false;
+                }
+                // Basic email regex
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    displayError(emailInput, 'Please enter a valid email address.');
+                    return false;
+                }
+                clearError(emailInput);
+                return true;
+            };
+
+            const validatePassword = () => {
+                const password = passwordInput.value;
+                if (password === '') {
+                    displayError(passwordInput, 'Password is required.');
+                    return false;
+                }
+                // Password must be at least 8 characters, contain at least one uppercase letter, and one number
+                if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+                    displayError(passwordInput, 'Password must be at least 8 characters long, include at least one uppercase letter and one number.');
+                    return false;
+                }
+                clearError(passwordInput);
+                return true;
+            };
+
+            const validateConfirmPassword = () => {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                if (confirmPassword === '') {
+                    displayError(confirmPasswordInput, 'Please confirm your password.');
+                    return false;
+                }
+                if (password !== confirmPassword) {
+                    displayError(confirmPasswordInput, 'Passwords do not match.');
+                    return false;
+                }
+                clearError(confirmPasswordInput);
+                return true;
+            };
+
+            const validateImage = () => {
+                const file = imageUploadInput.files[0];
+                if (!file) {
+                    displayError(imageUploadInput, 'Profile image is required.');
+                    return false;
+                }
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!allowedTypes.includes(file.type)) {
+                    displayError(imageUploadInput, 'Only JPG, PNG, and GIF images are allowed.');
+                    return false;
+                }
+                const maxSize = 2 * 1024 * 1024; // 2MB
+                if (file.size > maxSize) {
+                    displayError(imageUploadInput, 'Image size cannot exceed 2MB.');
+                    return false;
+                }
+                clearError(imageUploadInput);
+                return true;
+            };
+
+            // --- Event Listeners for Real-time Validation and Image Preview ---
+
+            nameInput.addEventListener('input', validateName);
+            emailInput.addEventListener('input', validateEmail);
+            passwordInput.addEventListener('input', validatePassword);
+            confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+
+            imageUploadInput.addEventListener('change', () => {
+                clearError(imageUploadInput); // Clear error immediately on change
+                const file = imageUploadInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        imagePreview.src = e.target.result;
+                        imagePreviewContainer.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.src = '#';
+                    imagePreviewContainer.classList.add('hidden');
+                }
+                validateImage(); // Validate after preview
+            });
+
+            // --- Form Submission Handler ---
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault(); // Prevent default form submission
+
+                hideGlobalError(); // Hide any previous global errors
+
+                // Run all validations
+                const isNameValid = validateName();
+                const isEmailValid = validateEmail();
+                const isPasswordValid = validatePassword();
+                const isConfirmPasswordValid = validateConfirmPassword();
+                const isImageValid = validateImage();
+
+                // Check if all fields are valid
+                if (isNameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid && isImageValid) {
+                    // All fields are valid, proceed with form submission logic
+                    // In a real application, you would send data to a server here using fetch() or XMLHttpRequest
+                    console.log('Form submitted successfully!');
+                    alert('Registration Successful! (Check console for data)'); // Using alert for demo
+                    
+                    // You can access form data like this:
+                    const formData = {
+                        name: nameInput.value.trim(),
+                        email: emailInput.value.trim(),
+                        // For security, never send raw password to console/client-side storage
+                        // Passwords would be hashed on the backend
+                        // password: passwordInput.value, 
+                        profileImage: imageUploadInput.files[0] ? imageUploadInput.files[0].name : 'No image'
+                    };
+                    console.log('Form Data:', formData);
+
+                    // Optionally reset the form
+                    form.reset();
+                    imagePreview.src = '#';
+                    imagePreviewContainer.classList.add('hidden');
+
+                } else {
+                    // If any validation fails, show a global error message
+                    showGlobalError('Please correct the errors in the form.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
